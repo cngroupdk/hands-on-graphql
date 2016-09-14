@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import Relay from 'react-relay';
 import { PageHeader } from 'react-bootstrap';
 
 import { PlanetsTable } from '../Planets/PlanetsTable.js';
-import { createDefaultRenderer } from '../DefaultRenderer';
 
 export class PlanetsPage extends Component {
   render() {
