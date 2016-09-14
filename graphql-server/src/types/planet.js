@@ -21,13 +21,26 @@ import {
 import { nodeInterface } from '../node-definition';
 import { tryNumberResolver } from './helpers.js';
 
+import {
+  cachedFetchAllResultsFromSWAPIByURLArray,
+} from '../data/swapi.js'
+
 const PlanetType = new GraphQLObjectType({
   name: 'Planet',
   fields: () => {
-    // const { FilmConnection, FilmType } = require('./film');
+    const { FilmType } = require('./film');
     // const { ImageType } = require('./image.js');
 
     return {
+      films: {
+        type: new GraphQLList(FilmType),
+        resolve(source) {
+          return cachedFetchAllResultsFromSWAPIByURLArray(
+            source.films
+          );
+          // return mapIdsToObjectsPromise(obj.films);
+        },
+      },
       id: { type: GraphQLID },
       // id: globalIdField(
       //   PlanetType.name,
@@ -51,12 +64,6 @@ const PlanetType = new GraphQLObjectType({
         type: GraphQLFloat,
         resolve: tryNumberResolver('surface_water'),
       },
-      // films: {
-      //   type: new GraphQLList(FilmType),
-      //   resolve(obj) {
-      //     return mapIdsToObjectsPromise(obj.films);
-      //   },
-      // },
       // filmsConnection: {
       //   type: FilmConnection,
       //   args: connectionArgs,

@@ -9,6 +9,7 @@ import fetch from 'node-fetch';
 import { cachedFetchJSONFromSWAPIAllResults } from './data/swapi.js';
 
 import { FilmType } from './types/film.js';
+import { PlanetType } from './types/planet.js';
 
 import { FILMS } from './mockdata.js';
 
@@ -16,6 +17,12 @@ const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQuery',
     fields: {
+      planets: {
+        type: new GraphQLList(PlanetType),
+        resolve() {
+          return cachedFetchJSONFromSWAPIAllResults('/planets');
+        }
+      },
       films: {
         type: new GraphQLList(FilmType),
         // async resolve() {
