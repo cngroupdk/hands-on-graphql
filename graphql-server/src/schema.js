@@ -1,4 +1,5 @@
 import {
+  GraphQLList,
   GraphQLString,
   GraphQLObjectType,
   GraphQLSchema,
@@ -6,15 +7,17 @@ import {
 
 import { FilmType } from './types/film.js';
 
+import { FILMS } from './mockdata.js';
+
 const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQuery',
     fields: {
-      hello: {
-        type: GraphQLString,
+      films: {
+        type: new GraphQLList(FilmType),
         resolve() {
-          return 'Hello world!';
-        }
+          return FILMS;
+        },
       },
       oneFilm: {
         type: FilmType,
@@ -24,6 +27,12 @@ const schema = new GraphQLSchema({
             title: 'Bond and chipmonks',
             opening_crawl: 'Yada yada yada',
           };
+        }
+      },
+      hello: {
+        type: GraphQLString,
+        resolve() {
+          return 'Hello world!';
         }
       }
     }
