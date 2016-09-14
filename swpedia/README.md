@@ -1,4 +1,4 @@
-# GrapQL Server
+# SWpedia Web Client
 
 ## Requirements
 
