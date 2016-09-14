@@ -19,7 +19,18 @@ const schema = new GraphQLSchema({
     fields: {
       planets: {
         type: new GraphQLList(PlanetType),
-        resolve() {
+        args: {
+          filter: { type: GraphQLString },
+        },
+        resolve(source, args) {
+          const { filter } = args;
+          if (filter === 'with films') {
+            return cachedFetchJSONFromSWAPIAllResults('/planets')
+              .then(planets => planets.filter(
+                planet => planet.films.length > 0
+              ))
+            ;
+          }
           return cachedFetchJSONFromSWAPIAllResults('/planets');
         }
       },
