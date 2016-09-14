@@ -5,6 +5,9 @@ import {
   GraphQLSchema,
 } from 'graphql';
 
+import fetch from 'node-fetch';
+import { cachedFetchJSONFromSWAPIAllResults } from './data/swapi.js';
+
 import { FilmType } from './types/film.js';
 
 import { FILMS } from './mockdata.js';
@@ -15,9 +18,15 @@ const schema = new GraphQLSchema({
     fields: {
       films: {
         type: new GraphQLList(FilmType),
+        // async resolve() {
+        //   const response = await fetch('http://swapi.co/api/films/')
+        //   const text = await response.text();
+        //   const data = JSON.parse(text);
+        //   return data.results;
+        // },
         resolve() {
-          return FILMS;
-        },
+          return cachedFetchJSONFromSWAPIAllResults('/films');
+        }
       },
       oneFilm: {
         type: FilmType,
