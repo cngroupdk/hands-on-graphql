@@ -1,6 +1,5 @@
 import {
   GraphQLFloat,
-  GraphQLID,
   GraphQLInt,
   GraphQLList,
   GraphQLObjectType,
@@ -14,42 +13,28 @@ import {
 } from 'graphql-relay';
 
 import {
-  // imageForPlanet,
-  // mapIdsToObjectsPromise,
-  // swapiURLtoId,
+  imageForPlanet,
+  mapIdsToObjectsPromise,
+  swapiURLtoId,
 } from '../data';
 import { nodeInterface } from '../node-definition';
 import { tryNumberResolver } from './helpers.js';
 
-import {
-  cachedFetchAllResultsFromSWAPIByURLArray,
-} from '../data/swapi.js'
-
 const PlanetType = new GraphQLObjectType({
   name: 'Planet',
   fields: () => {
-    const { FilmType } = require('./film');
-    // const { ImageType } = require('./image.js');
+    const { FilmConnection, FilmType } = require('./film');
+    const { ImageType } = require('./image.js');
 
     return {
-      films: {
-        type: new GraphQLList(FilmType),
-        resolve(source) {
-          return cachedFetchAllResultsFromSWAPIByURLArray(
-            source.films
-          );
-          // return mapIdsToObjectsPromise(obj.films);
-        },
+      id: globalIdField(
+        PlanetType.name,
+        ({ url }) => swapiURLtoId(url)
+      ),
+      rawId: {
+        type: GraphQLInt,
+        resolve: ({ url }) => swapiURLtoId(url)
       },
-      id: { type: GraphQLID },
-      // id: globalIdField(
-      //   PlanetType.name,
-      //   ({ url }) => swapiURLtoId(url)
-      // ),
-      // rawId: {
-      //   type: GraphQLInt,
-      //   resolve: ({ url }) => swapiURLtoId(url)
-      // },
       name: { type: GraphQLString },
       climate: { type: GraphQLString },
       population: {
@@ -64,34 +49,40 @@ const PlanetType = new GraphQLObjectType({
         type: GraphQLFloat,
         resolve: tryNumberResolver('surface_water'),
       },
-      // filmsConnection: {
-      //   type: FilmConnection,
-      //   args: connectionArgs,
-      //   async resolve(obj, args) {
-      //     const allFilms = await mapIdsToObjectsPromise(obj.films);
-      //     return connectionFromArray(allFilms, args);
-      //   },
-      // },
-      // image: {
-      //   type: ImageType,
-      //   args: {
-      //     size: { type: GraphQLInt },
-      //     rotation: { type: GraphQLInt },
-      //   },
-      //   resolve: imageForPlanet,
-      // },
+      films: {
+        type: new GraphQLList(FilmType),
+        resolve(obj) {
+          return mapIdsToObjectsPromise(obj.films);
+        },
+      },
+      filmsConnection: {
+        type: FilmConnection,
+        args: connectionArgs,
+        async resolve(obj, args) {
+          const allFilms = await mapIdsToObjectsPromise(obj.films);
+          return connectionFromArray(allFilms, args);
+        },
+      },
+      image: {
+        type: ImageType,
+        args: {
+          size: { type: GraphQLInt },
+          rotation: { type: GraphQLInt },
+        },
+        resolve: imageForPlanet,
+      },
     };
   },
-  // interfaces: [nodeInterface],
+  interfaces: [nodeInterface],
 });
 
 
-// const { connectionType: PlanetConnection } = connectionDefinitions({
-//   nodeType: PlanetType,
-// });
+ const { connectionType: PlanetConnection } = connectionDefinitions({
+   nodeType: PlanetType,
+ });
 
 
 export {
   PlanetType,
-  // PlanetConnection,
+  PlanetConnection,
 };

@@ -5,18 +5,6 @@ import {
 } from './swapi.js';
 import { planetImage } from './planet-image.js';
 
-
-
-
-
-
-
-
-
-
-
-// ----------------
-
 export { swapiURLtoId } from './swapi.js';
 
 export const getAllFilmsPromise = () => cachedFetchJSONFromSWAPIAllResults('/films');
@@ -39,3 +27,23 @@ export function imageForPlanet(planet, args) {
     water: surface_water,
   });
 }
+
+// import { FILMS, PLANETS } from '../mockdata.js';
+// export const getAllFilms = () => FILMS;
+// export const getAllPlanets = () => PLANETS;
+// export const getFilmById = (id) => findObejctById(FILMS, id);
+// export const getPlanetById = (id) => findObejctById(PLANETS, id);
+
+// function mapPlanetIdsToObjects(ids) {
+//   return (ids || []).map(getPlanetById);
+// };
+
+// function mapFilmIdsToObjects(ids) {
+//   return (ids || []).map(getFilmById);
+// };
+
+// function findObejctById(array, objectId) {
+//   return array.find(({ id }) =>
+//     id == objectId
+//   );
+// };
