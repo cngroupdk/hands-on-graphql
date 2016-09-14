@@ -14,11 +14,12 @@ import { NotFoundPage } from './components/Pages/NotFoundPage.js';
 import { PlanetDetailPage } from './components/Pages/PlanetDetailPage.js';
 import { PlanetsPage } from './components/Pages/PlanetsPage.js';
 
-// Relay.injectNetworkLayer(
-//   new Relay.DefaultNetworkLayer(
-//     'http://localhost:8844/graphql'
-//   )
-// );
+import Relay from 'react-relay';
+Relay.injectNetworkLayer(
+  new Relay.DefaultNetworkLayer(
+    'http://localhost:8844/graphql'
+  )
+);
 
 export class AppRoutes extends Component {
   render() {

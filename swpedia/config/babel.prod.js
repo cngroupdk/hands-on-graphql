@@ -12,7 +12,7 @@ module.exports = {
   plugins: [
 
     // Enable Relay
-    // require.resolve('babel-plugin-react-relay'),
+    require.resolve('babel-plugin-react-relay'),
 
 
 

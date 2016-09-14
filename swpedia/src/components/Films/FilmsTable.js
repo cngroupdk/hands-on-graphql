@@ -1,14 +1,13 @@
 import React, { Component, PropTypes } from 'react';
+import Relay from 'react-relay';
 
 import { ItemsTable } from '../ItemsTable/ItemsTable.js';
 
-export class FilmsTable extends Component {
-  static propTypes = {
-    films: PropTypes.array.isRequired,
-  };
+class FilmsTableRaw extends Component {
 
   render() {
-    const { films } = this.props;
+    const { viewer } = this.props;
+    const { films } = viewer;
 
     return (
       <ItemsTable
@@ -22,3 +21,16 @@ export class FilmsTable extends Component {
     );
   }
 }
+
+export const FilmsTable = Relay.createContainer(FilmsTableRaw, {
+  fragments: {
+    viewer: () => Relay.QL`
+      fragment on Viewer {
+        films {
+          id
+          title
+        }
+      }
+    `
+  }
+})
