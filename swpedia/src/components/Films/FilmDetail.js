@@ -1,9 +1,10 @@
 import React, { Component, PropTypes } from 'react';
+import Relay from 'react-relay';
 
 import { Col, Grid, PageHeader } from 'react-bootstrap';
 
+import { PlanetsTableContainer } from '../Planets/PlanetsTable.js';
 import { InfoList } from '../InfoList/InfoList.js';
-import { PlanetsTable } from '../Planets/PlanetsTable.js';
 
 export class FilmDetail extends Component {
   static propTypes = {
@@ -13,7 +14,7 @@ export class FilmDetail extends Component {
   render() {
     const { film } = this.props;
     const safeFilm = film || {};
-    const { rawId, title, openingCrawl, planets } = safeFilm;
+    const { rawId, title, openingCrawl, planetsConnection: planets } = safeFilm;
 
     const infoItems = [
       { key: 'director', header: 'Director'},
@@ -35,10 +36,29 @@ export class FilmDetail extends Component {
           </Col>
           <Col xs={6}>
             <h2>Planets</h2>
-            <PlanetsTable planets={planets}/>
+            <PlanetsTableContainer planets={planets}/>
           </Col>
         </Grid>
       </div>
     );
   }
 }
+
+export const FilmDetailContainer = Relay.createContainer(FilmDetail, {
+  fragments: {
+    film: () => Relay.QL`
+      fragment on Film {
+        rawId
+        title
+
+        director
+        openingCrawl
+        releaseDate
+
+        planetsConnection(first:100) {
+          ${PlanetsTableContainer.getFragment('planets')}
+        }
+      }
+    `
+  },
+});

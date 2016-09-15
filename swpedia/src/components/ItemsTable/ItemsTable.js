@@ -27,9 +27,10 @@ export class ItemsTable extends Component {
   }
 
   renderRow(item, index) {
+    const itemNode = item.node
     const { columnKeys } = this.props;
-    const cols = columnKeys.map(columnKey => item[columnKey]);
-    const renderCell = this.getCellRenderer(item);
+    const cols = columnKeys.map(columnKey => itemNode[columnKey]);
+    const renderCell = this.getCellRenderer(itemNode);
     return (
       <tr key={index}>
         {cols.map(renderCell)}

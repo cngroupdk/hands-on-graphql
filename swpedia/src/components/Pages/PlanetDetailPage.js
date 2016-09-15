@@ -1,35 +1,23 @@
-import React, { Component } from 'react';
+import Relay from 'react-relay';
 
-import { PlanetDetail } from '../Planets/PlanetDetail.js';
+import { PlanetDetailContainer } from '../Planets/PlanetDetail.js';
+import { createDefaultRenderer } from '../DefaultRenderer';
 
-export class PlanetDetailPage extends Component {
-  render() {
-    const { params } = this.props;
+class PlanetDetailRoute extends Relay.Route {
+  static routeName = 'PlanetDetailRoute';
+  static queries = {
+    planet: () => Relay.QL`query {
+      planet: node(id: $planetId)
+    }`,
+  };
+}
+
+export const PlanetDetailPageRenderer = createDefaultRenderer({
+  Container: PlanetDetailContainer,
+  getQueryConfig(that) {
+    const { params } = that.props;
     const { planetId } = params || {};
 
-    const planet = {
-      id: planetId,
-      name: 'Tatoonie',
-      population: 8000,
-      climate: 'temperate, tropical',
-      diameter: 10200,
-      surface_water: 10,
-      films: [
-        {
-          id: 1,
-          title: 'A New Hope',
-        },
-      ],
-      frontImage: {
-        url: 'http://worldgen.bin.sh/worldgen.cgi?palette=Atlas&iter=5000&cmd=Create&name=PlanetName&pct_ice=0&height=250&seed=1169012608&rotate=0&projection=Spherical&pct_water=45&motif=SciFi',
-      },
-      backImage: {
-        url: 'http://worldgen.bin.sh/worldgen.cgi?palette=Atlas&iter=5000&cmd=Create&name=PlanetName&pct_ice=0&height=250&seed=1169012608&rotate=0180&projection=Spherical&pct_water=45&motif=SciFi',
-      }
-    }
-
-    return (
-      <PlanetDetail planet={planet} />
-    )
-  }
-}
+    return new PlanetDetailRoute({ planetId });
+  },
+});

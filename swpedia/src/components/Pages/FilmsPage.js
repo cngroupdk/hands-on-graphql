@@ -2,32 +2,43 @@ import React, { Component } from 'react';
 import Relay from 'react-relay';
 import { PageHeader } from 'react-bootstrap';
 
-import { FilmsTable } from '../Films/FilmsTable.js';
+import { FilmsTableContainer } from '../Films/FilmsTable.js';
+import { createDefaultRenderer } from '../DefaultRenderer';
 
-class FilmsPageQueryConfig extends Relay.Route {
-  static routeName = 'Films';
-  static queries = {
-    viewer: () => Relay.QL`query { viewer }`
-  };
-}
-
-export class FilmsPage extends Component {
+class FilmsPage extends Component {
   render() {
+    const { viewer } = this.props;
+    const { filmsConnection: films } = viewer || {};
+
     return (
       <div>
         <PageHeader>Films</PageHeader>
-        <Relay.Renderer
-          Container={FilmsTable}
-          queryConfig={new FilmsPageQueryConfig()}
-          environment={Relay.Store}
-          render={({ done, props }) => {
-            if (!done) {
-              return <div>Loading...</div>;
-            }
-            return <FilmsTable {...props}/>;
-          }}
-        />
+        <FilmsTableContainer films={films}/>
       </div>
     );
   }
 }
+
+const FilmsPageContainer = Relay.createContainer(FilmsPage, {
+  fragments: {
+    viewer: () => Relay.QL`
+      fragment on Viewer {
+        filmsConnection(first:100){
+          ${FilmsTableContainer.getFragment('films')}
+        }
+      }
+    `,
+  }
+});
+
+class FilmsRoute extends Relay.Route {
+  static routeName = 'FilmsRoute';
+  static queries = {
+    viewer: () => Relay.QL`query { viewer }`,
+  };
+}
+
+export const FilmsPageRenderer = createDefaultRenderer({
+  Container: FilmsPageContainer,
+  getQueryConfig() { return new FilmsRoute(); },
+});

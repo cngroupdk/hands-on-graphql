@@ -18,6 +18,7 @@ const graphQLServer = express();
   });
 })();
 
+
 graphQLServer.use('/graphql', graphqlHTTP({ schema, graphiql: true }));
 
 graphQLServer.listen(GRAPHQL_PORT, () => {

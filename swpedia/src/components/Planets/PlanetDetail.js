@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
+import Relay from 'react-relay';
 
 import { Button, Col, Grid, Image, PageHeader, Row } from 'react-bootstrap';
 
-import { FilmsTable } from '../Films/FilmsTable.js';
+import { FilmsTableContainer } from '../Films/FilmsTable.js';
 import { InfoList } from '../InfoList/InfoList.js';
 
 export class PlanetDetail extends Component {
@@ -11,12 +12,12 @@ export class PlanetDetail extends Component {
   };
 
   render() {
-    const { planet } = this.props;
+    const { planet, relay } = this.props;
     const safePlanet = planet || {};
     const {
       rawId,
       name,
-      films,
+      filmsConnection: films,
       frontImage,
       backImage,
     } = safePlanet;
@@ -27,6 +28,9 @@ export class PlanetDetail extends Component {
       { key: 'climate', header: 'Climate'},
       { key: 'surfaceWater', header: 'Surface Water', suffix: '%'},
     ];
+
+    // const imageUrl = 'http://worldgen.bin.sh/worldgen.cgi?palette=Atlas&iter=5000&cmd=Create&name=PlanetName&pct_ice=0&height=250&seed=1169012608&rotate=0&projection=Spherical&pct_water=45&motif=SciFi';
+    // const rotatedImageUrl = 'http://worldgen.bin.sh/worldgen.cgi?palette=Atlas&iter=5000&cmd=Create&name=PlanetName&pct_ice=0&height=250&seed=1169012608&rotate=0180&projection=Spherical&pct_water=45&motif=SciFi';
 
     return (
       <div>
@@ -41,7 +45,13 @@ export class PlanetDetail extends Component {
           </Col>
           <Col xs={6}>
             <p>
-              <Button>
+              <Button
+                onClick={() =>
+                  relay.setVariables({
+                    imageSize: relay.variables.imageSize > 100 ? 100 : 250,
+                  })
+                }
+              >
                 toggle size
               </Button>
             </p>
@@ -56,7 +66,7 @@ export class PlanetDetail extends Component {
             <Row>
               <Col xs={12}>
                 <h2>Films</h2>
-                <FilmsTable films={films}/>
+                <FilmsTableContainer films={films}/>
               </Col>
             </Row>
           </Col>
@@ -65,3 +75,35 @@ export class PlanetDetail extends Component {
     );
   }
 }
+
+export const PlanetDetailContainer = Relay.createContainer(PlanetDetail, {
+  initialVariables: {
+    imageSize: 100,
+  },
+  fragments: {
+    planet: () => Relay.QL`
+      fragment on Planet {
+        rawId
+
+        name
+
+        population
+        diameter
+        climate
+        surfaceWater
+
+        frontImage: image(size: $imageSize) {
+          url
+        }
+
+        backImage: image(size: $imageSize, rotation: 180) {
+          url
+        }
+
+        filmsConnection(first:100) {
+          ${FilmsTableContainer.getFragment('films')}
+        }
+      }
+    `
+  },
+});
